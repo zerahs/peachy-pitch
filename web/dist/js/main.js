@@ -57,49 +57,14 @@ function setup() {
   treasure.y = gameScene.height / 2 - treasure.height / 2;
   gameScene.addChild(treasure);
 
-  //Make the blobs
-  var numberOfBlobs = 6,
-      spacing = 48,
-      xOffset = 150,
-      speed = 2,
-      direction = 1;
-
-  //An array to store all the blob monsters
+  // Create blobs
   blobs = [];
-
-  //Make as many blobs as there are `numberOfBlobs`
-  for (var i = 0; i < numberOfBlobs; i++) {
-
-    //Make a blob
-    var blob = new Sprite(id["blob.png"]);
-
-    //Space each blob horizontally according to the `spacing` value.
-    //`xOffset` determines the point from the left of the screen
-    //at which the first blob should be added
-    var x = spacing * i + xOffset;
-
-    //Give the blob a random y position
-    var y = randomInt(0, stage.height - blob.height);
-
-    //Set the blob's position
-    blob.x = x;
-    blob.y = y;
-
-    //Set the blob's vertical velocity. `direction` will be either `1` or
-    //`-1`. `1` means the enemy will move down and `-1` means the blob will
-    //move up. Multiplying `direction` by `speed` determines the blob's
-    //vertical direction
-    blob.vy = speed * direction;
-
-    //Reverse the direction for the next blob
-    direction *= -1;
-
-    //Push the blob into the `blobs` array
+  for(var i=0; i<10; i++){
+    var blob = createBlob();
     blobs.push(blob);
-
-    //Add the blob to the `gameScene`
-    gameScene.addChild(blob);
+    gameScene.addChild(blob);  
   }
+  
 
   //Create the health bar
   healthBar = new Container();
@@ -170,17 +135,12 @@ function play() {
 
   //Loop through all the sprites in the `enemies` array
   blobs.forEach(function(blob) {
-
-    //Move the blob
-    blob.y += blob.vy;
-
-    //Check the blob's screen boundaries
+    blob.x += blob.vx;
+    
     var blobHitsWall = contain(blob, {x: 28, y: 10, width: 488, height: 480});
-
-    //If the blob hits the top or bottom of the stage, reverse
-    //its direction
-    if (blobHitsWall === "top" || blobHitsWall === "bottom") {
-      blob.vy *= -1;
+    if (blobHitsWall === "left") {
+      blob.x = stage.width;
+      blob.y = randomInt(0, stage.height - blob.height);
     }
 
     //Test for a collision. If any of the enemies are touching
@@ -226,6 +186,23 @@ function play() {
     state = end;
     message.text = "You won!";
   } 
+}
+
+function createBlob()
+{
+  //Make a blob
+  var blob = new Sprite(id["blob.png"]);
+
+  //Set the blob's position
+  blob.x = randomInt(0, stage.width - blob.width);
+  blob.y = randomInt(0, stage.height - blob.height);
+
+  // Set blob velocity
+  var speed = 2;
+  var direction = -1;
+  blob.vx = speed * direction;
+
+  return blob;
 }
 
 function pause()
